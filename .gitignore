@@ -1,0 +1,13 @@
+*.suo
+*.db
+Debug
+.vs
+*.log
+*.pdb
+*.obj
+*.idb
+*.bin
+*.abs
+*.exe
+ipch
+*.user
