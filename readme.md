@@ -9,7 +9,7 @@ This library was originally written in 2002 year.
 
 Since it is especially very simple library, you can add your any functional, very easy.
 
-For this reason, no dedicated as paper documents other than the text.
+For this reason, no dedicated as paper documents other than this text.
 
 All you need to know you can see in the source code of the test application (see main.cpp).
 
