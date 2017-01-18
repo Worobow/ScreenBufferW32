@@ -59,7 +59,7 @@ RECT SCBW32rect={0,0,0,0};
 wchar_t SCBW32b[25][80]; //bytes
 DWORD  SCBW32c[25][80];//col
 
-static wchar_t * SCBWTitle = L"sample";
+extern "C" wchar_t * SCBWTitle = L"sample";
 
 HBRUSH WHhbr;
 

@@ -101,7 +101,11 @@ inline void CONFSTR ( size_t x, size_t y, wchar_t * s, ... )
     SBputsW (x,y,0,str,i);
 }
 
+#ifdef __cplusplus
+extern "C"
+#endif
 wchar_t * SCBWTitle;
+
 #define SET_TITLE(a) SCBWTitle=a
 
 typedef struct {

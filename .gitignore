@@ -11,3 +11,6 @@ Debug
 *.exe
 ipch
 *.user
+x64
+Win32
+Release
