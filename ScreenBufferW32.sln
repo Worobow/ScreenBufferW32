@@ -12,6 +12,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		readme.md = readme.md
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test2App", "Test2App\Test2App.vcxproj", "{DD246127-3DA8-4334-B714-4F921B95EBDF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -36,6 +38,14 @@ Global
 		{BCF7ED70-6506-41D2-8F94-9A6586608DF9}.Release|Win32.Build.0 = Release|Win32
 		{BCF7ED70-6506-41D2-8F94-9A6586608DF9}.Release|x64.ActiveCfg = Release|x64
 		{BCF7ED70-6506-41D2-8F94-9A6586608DF9}.Release|x64.Build.0 = Release|x64
+		{DD246127-3DA8-4334-B714-4F921B95EBDF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DD246127-3DA8-4334-B714-4F921B95EBDF}.Debug|Win32.Build.0 = Debug|Win32
+		{DD246127-3DA8-4334-B714-4F921B95EBDF}.Debug|x64.ActiveCfg = Debug|x64
+		{DD246127-3DA8-4334-B714-4F921B95EBDF}.Debug|x64.Build.0 = Debug|x64
+		{DD246127-3DA8-4334-B714-4F921B95EBDF}.Release|Win32.ActiveCfg = Release|Win32
+		{DD246127-3DA8-4334-B714-4F921B95EBDF}.Release|Win32.Build.0 = Release|Win32
+		{DD246127-3DA8-4334-B714-4F921B95EBDF}.Release|x64.ActiveCfg = Release|x64
+		{DD246127-3DA8-4334-B714-4F921B95EBDF}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

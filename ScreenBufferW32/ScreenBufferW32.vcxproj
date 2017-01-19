@@ -134,6 +134,9 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Full</Optimization>
+      <ControlFlowGuard>false</ControlFlowGuard>
+      <SDLCheck>false</SDLCheck>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>Gdi32.lib</AdditionalDependencies>
@@ -150,6 +153,9 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Full</Optimization>
+      <ControlFlowGuard>false</ControlFlowGuard>
+      <SDLCheck>false</SDLCheck>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>Gdi32.lib</AdditionalDependencies>

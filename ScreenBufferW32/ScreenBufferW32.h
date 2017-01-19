@@ -125,3 +125,6 @@ VOID  __cdecl ShowStat ( size_t x, size_t y, wchar_t * text, size_t lt, STAT * s
 extern "C" 
 #endif
 VOID  __cdecl AccumStats ( STAT * stat, int cur );
+
+#define SCREEN_HIGHT 35
+#define SCREEN_WIDE 127

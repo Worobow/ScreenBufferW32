@@ -32,6 +32,8 @@
 #include <stdio.h>
 #include <conio.h>
 
+#include "ScreenBufferW32.h"
+
 typedef void (*SCREENBUFFER_CALLBACK) ( void );
 
 extern "C" int  __cdecl SBInit  ( SCREENBUFFER_CALLBACK Updater );
@@ -56,14 +58,17 @@ ULONG SCBW32ch=1;
 
 RECT SCBW32rect={0,0,0,0};
 
-wchar_t SCBW32b[25][80]; //bytes
-DWORD  SCBW32c[25][80];//col
+wchar_t SCBW32b[SCREEN_HIGHT][SCREEN_WIDE]; //bytes
+DWORD  SCBW32c[SCREEN_HIGHT][SCREEN_WIDE];//col
 
 extern "C" wchar_t * SCBWTitle = L"sample";
 
 HBRUSH WHhbr;
 
 SCREENBUFFER_CALLBACK lpUpDater=NULL;
+
+// define  DRAW_DEBUG_FRAME  if want to see invalide rectangle
+//#define DRAW_DEBUG_FRAME 
 
 VOID CALLBACK SCBTimerProc ( HWND hwnd,  UINT uMsg, UINT_PTR idEvent,  DWORD dwTime )
 {
@@ -74,15 +79,18 @@ VOID CALLBACK SCBTimerProc ( HWND hwnd,  UINT uMsg, UINT_PTR idEvent,  DWORD dwT
     if ( !SCBW32ch )
         return;
 
-    for(s=0;s<25;s++)
-        TextOut(SCBmdc,0,s*SCBtm.tmHeight,(LPCWSTR)&SCBW32b[s][0],80);
+    for(s=0;s<SCREEN_HIGHT;s++)
+        TextOut(SCBmdc,0,s*SCBtm.tmHeight,(LPCWSTR)&SCBW32b[s][0], SCREEN_WIDE );
 
     r.top=SCBW32rect.top*SCBtm.tmHeight;
     r.bottom=SCBW32rect.bottom*SCBtm.tmHeight;
     r.left=SCBW32rect.left*(SCBtm.tmAveCharWidth+1);
     r.right=SCBW32rect.right*(SCBtm.tmAveCharWidth+1);
-    
+
+#ifdef DRAW_DEBUG_FRAME
     FrameRect(  SCBmdc,&r,WHhbr);
+#endif
+
     InvalidateRect(SCBwnd,&r,0);
 
     SCBW32ch=0;
@@ -116,7 +124,7 @@ LRESULT CALLBACK MainWndProc ( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
         case WM_PAINT:
             hdc=BeginPaint(hwnd,&ps);
             
-            BitBlt( hdc,0,0,(SCBtm.tmAveCharWidth+1)*80,SCBtm.tmHeight*25, SCBmdc, 0,0,SRCCOPY );////MERGECOPY
+            BitBlt( hdc,0,0,(SCBtm.tmAveCharWidth+1)*SCREEN_WIDE,SCBtm.tmHeight*SCREEN_HIGHT, SCBmdc, 0,0,SRCCOPY );////MERGECOPY
             EndPaint(hwnd,&ps);
             return NULL; 
         default: 
@@ -125,6 +133,8 @@ LRESULT CALLBACK MainWndProc ( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
     return NULL; 
 
 }
+
+#define FILL_SCREEN_CHAR L' '
 
 DWORD WINAPI SCBthr (  LPVOID _lpUpDater )
 {
@@ -185,7 +195,7 @@ DWORD WINAPI SCBthr (  LPVOID _lpUpDater )
     SCBhfnt = (HFONT)GetStockObject(SYSTEM_FIXED_FONT); 
     GetTextMetrics(SCBmdc,&SCBtm);
     
-    SCBbmp = CreateCompatibleBitmap(hdc,(SCBtm.tmAveCharWidth+1)*80, SCBtm.tmHeight*25 ); 
+    SCBbmp = CreateCompatibleBitmap(hdc,(SCBtm.tmAveCharWidth+1)*SCREEN_WIDE, SCBtm.tmHeight*SCREEN_HIGHT );
     
     DeleteDC(hdc);
 
@@ -201,13 +211,13 @@ DWORD WINAPI SCBthr (  LPVOID _lpUpDater )
     
     SCBtmr=SetTimer(0,0,1000/60, (TIMERPROC) SCBTimerProc);
 
-    wmemset(&SCBW32b[0][0],L'.',sizeof(SCBW32b)/sizeof(SCBW32b[0][0]));
+    wmemset(&SCBW32b[0][0], FILL_SCREEN_CHAR, sizeof(SCBW32b)/sizeof(SCBW32b[0][0]));
 
     WHhbr=(HBRUSH)GetStockObject(WHITE_BRUSH);
     
     SCBTimerProc ( SCBwnd, 0, 0, 0 );
 
-    MoveWindow( SCBwnd, 0,   0,    (SCBtm.tmAveCharWidth+1)*80+5,    (SCBtm.tmHeight+1)*25+5,  FALSE );
+    MoveWindow( SCBwnd, 0,   0,    (SCBtm.tmAveCharWidth+1)*SCREEN_WIDE +5,    (SCBtm.tmHeight+1)*SCREEN_HIGHT +5,  FALSE );
     ShowWindow(SCBwnd, SW_SHOW); 
     UpdateWindow(SCBwnd); 
 
