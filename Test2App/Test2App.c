@@ -121,14 +121,110 @@ int TestCaWithScreenAndWithoutStat ( size_t loop_count )
 	return Var;
 }
 
-typedef int (*TESTCASE) ( size_t loop_count );
+//#define DEMO_STD_CONSOLE
 
-//TESTCASE  TestCases[] = {};
+#ifdef DEMO_STD_CONSOLE
+HANDLE hNewScreenBuffer;
+HANDLE hStdout;
+
+CHAR_INFO chiBuffer[SCREEN_WIDE];// temp buffer for string
+COORD coordBufSize;
+COORD coordBufCoord;
+
+SMALL_RECT srctWriteRect;
+
+void InitStdScreen ( void )
+{
+
+	hStdout = GetStdHandle ( STD_OUTPUT_HANDLE );
+
+	hNewScreenBuffer = CreateConsoleScreenBuffer (
+		GENERIC_READ |           // read/write access 
+		GENERIC_WRITE,
+		FILE_SHARE_READ |
+		FILE_SHARE_WRITE,        // shared 
+		NULL,                    // default security attributes 
+		CONSOLE_TEXTMODE_BUFFER, // must be TEXTMODE 
+		NULL );
+	
+	SetConsoleActiveScreenBuffer ( hNewScreenBuffer );
+
+	for ( size_t i = 0; i < _countof ( chiBuffer ); i++ )
+		chiBuffer[i].Attributes = ( FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED );
+
+	coordBufCoord.X = 0;
+	coordBufCoord.Y = 0;
+
+	coordBufSize.Y = 1;
+}
+
+void CloseStdScreen ( void )
+{
+	SetConsoleActiveScreenBuffer ( hStdout );
+}
+
+void __cdecl StdSBputsW ( size_t x, size_t y, int c, wchar_t * str, size_t ls )
+{
+	coordBufSize.X = (SHORT)ls;
+
+	srctWriteRect.Top = (SHORT) x;
+	srctWriteRect.Left = (SHORT) y;
+	srctWriteRect.Bottom = (SHORT) x;
+	srctWriteRect.Right = (SHORT) (y+ls);
+
+	for ( size_t i = 0; i < ls; i++ )
+		chiBuffer[i].Char.UnicodeChar = str[i];
+
+	WriteConsoleOutput (
+		hNewScreenBuffer,
+		chiBuffer,
+		coordBufSize,
+		coordBufCoord,
+		&srctWriteRect );
+}
+
+int TestCaWithStdScreenAndWithoutStat ( size_t loop_count )
+{
+	// string to display
+	wchar_t strin[] = L">>>>>>> X <<<<<<<<";
+	wchar_t strout[] = L"<<<<<<< X >>>>>>>>";
+
+	size_t strlength = _countof ( strin );
+
+	wchar_t * const casestr[2] = { strin,strout };
+
+	size_t j = loop_count;
+
+	//chars for roll  
+	const wchar_t c[] = L"\\|/-";
+
+	int Var;
+
+	wchar_t * str;
+
+	while ( j-- ){
+		str = casestr[j % 2];
+		// demo some display outputs
+		str[8] = c[j % 4];
+		StdSBputsW ( 10, 40, RGB ( 127, 100, 100 ), str, strlength );
+
+		// demo for set value
+		Var = rand ( );
+	}
+
+	return Var;
+}
+
+#endif //DEMO_STD_CONSOLE
+
+typedef int (*TESTCASE) ( size_t loop_count );
 
 DWORD RunTestCase ( TESTCASE o, int * result, size_t count )
 {
 	DWORD start;
 	DWORD end;
+
+	( *o ) (10);
 
 	start = GetTickCount ( );
 	*result = (*o) ( count );
@@ -145,24 +241,47 @@ int main()
 	// create window without callback 
 	SBInit ( 0 );
 
-	int result;
-	size_t count = 100000000;
+#ifdef	DEMO_STD_CONSOLE
+	InitStdScreen ( );
+#endif
 
-	RunTestCase ( TestCaWithScreenAndStat, &result, 10 );
+	int result;
+
+	size_t count = 10000000;
+
+#ifdef	DEMO_STD_CONSOLE
+	count = count / 70; // standart console too slow for 10 billions !!!
+#endif
+
 	DWORD durwithall = RunTestCase ( TestCaWithScreenAndStat, &result, count );
 	printf ( "Test case with screen and with stat time:%d res:%d\n", durwithall,result);
 
-	RunTestCase ( TestCaWithScreenAndWithoutStat, &result, 10 );
 	DWORD durwithoutstat = RunTestCase ( TestCaWithScreenAndWithoutStat,&result, count );
 	printf ( "Test case with screen and without stat time:%d res:%d\n", durwithoutstat, result );
 
-	RunTestCase ( TestCaWithoutScreen, &result, 10 );
 	DWORD durwithoutall = RunTestCase ( TestCaWithoutScreen, &result, count );
 	printf ( "Test case without screen and without stat time:%d res:%d\n", durwithoutall, result );
 
+#ifdef	DEMO_STD_CONSOLE
+	DWORD durwithstd = RunTestCase ( TestCaWithStdScreenAndWithoutStat, &result, count );
+	printf ( "Test case use std screen and without stat time:%d res:%d\n", durwithstd, result );
+#endif
 	////////////////////
 
-	printf ( "diff: %d %d\n", durwithall - durwithoutall, durwithoutstat - durwithoutall );
+	printf ( "diff: %d %d "
+#ifdef	DEMO_STD_CONSOLE
+			 "%d"
+#endif
+			 "\n", durwithall - durwithoutall, durwithoutstat - durwithoutall
+#ifdef	DEMO_STD_CONSOLE
+			 , durwithstd - durwithoutall 
+#endif
+	);
+
+
+#ifdef	DEMO_STD_CONSOLE
+	CloseStdScreen ( );
+#endif
 
 	// close screen window and free all resources
 	SBClose ( );
