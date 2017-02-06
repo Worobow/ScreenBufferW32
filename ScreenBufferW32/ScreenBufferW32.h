@@ -92,7 +92,7 @@ inline void CONFSTR ( size_t x, size_t y, wchar_t * s, ... )
     int i;
     va_start(a,s);
 
-#ifdef DDK
+#ifdef _NTDDK_
     i=vswprintf(str,s,a);
 #else
     i=vswprintf(str,sizeof(str),s,a);
